@@ -137,7 +137,7 @@ const ReservationScreen = ({ list }) => {
                                     <th className=" text-xs text-start">Guests</th>
                                     <th className='text-xs text-start'>Time</th>
                                     <th className=" text-xs text-start">Event Date</th>
-                                    <th className=" text-xs text-start">Status</th>
+                                    {/* <th className=" text-xs text-start">Status</th> */}
                                     <th className=" text-xs text-start">Mode</th>
                                 </tr>
                             </thead>
@@ -151,7 +151,7 @@ const ReservationScreen = ({ list }) => {
                                             <td className="text-xs">{item.noofguests}</td>
                                             <td className='text-xs'>{item.time}</td>
                                             <td className='text-xs'>{item.eventDate}</td>
-                                            <td className='text-xs'>
+                                            {/* <td className='text-xs'>
                                                 <select id="dropdown" value={selectedOptions[item.$id] || ''} onChange={(e) => handleSelectChange2(item.$id, e.target.value)}>
                                                     <option value="">Select</option>
                                                     <option value="Confirmed">Confirmed</option>
@@ -160,8 +160,7 @@ const ReservationScreen = ({ list }) => {
                                                     <option value="CheckedIn">Checked In</option>
                                                     <option value="CheckedOut">Checked Out</option>
                                                 </select>
-                                                {/* {item.status} */}
-                                            </td>
+                                            </td> */}
                                             <td className='text-xs'>{item.mode}</td>
                                             <td>
                                                 <button onClick={() => handleViewClick(item.$id)} className='text-xs font-semibold bg-gray-200 px-2 py-1 rounded'>VIEW</button>
@@ -179,7 +178,7 @@ const ReservationScreen = ({ list }) => {
                         <button onClick={() => setTab('reservation')} className={tab === "reservation" ? "flex-1 text-sm font-bold bg-emerald-800 text-white py-5 rounded-md" : "flex-1 text-sm font-bold hover:bg-emerald-800 bg-emerald-600 text-white py-5 rounded-md"}>RESERVATIONS</button>
                     </div>
                     {
-                        tab === 'walkin' ? <WalkInForm id={idd} /> : <ReservationForm />
+                        tab === 'walkin' ? <WalkInForm id={idd} /> : <ReservationForm id={idd} />
                     }
                 </div>
             </div>
@@ -241,9 +240,10 @@ const WalkInForm = ({ id }) => {
     // const [deskCharges, setDeskCharges] = useState(0);
     const [time, setTime] = useState("");
     const [meridian, setMeridian] = useState("")
+    const [status,setStatus] = useState("Confirmed")
 
     const addBooking = async () => {
-        if(id){
+        if (id) {
             const ack = await db.deleteDocument('65b0da7f5cc58e0cff7e', '65b0f5e876d1ef0f96b0', id);
             console.log(ack);
         }
@@ -255,16 +255,16 @@ const WalkInForm = ({ id }) => {
             {
                 'firstname': formdata.firstname ? formdata.firstname : firstName,
                 'lastname': formdata.lastname ? formdata.lastname : lastName,
-                'noofguests': pax,
+                'noofguests': formdata.noofguests ? formdata.noofguests : pax,
                 // 'dateofbirth': `${dobDate} ${dobMonth} ${dobYear}`,
                 'eventDate': `${formdata.eventDate ? (formdata.eventDate)?.split(" ")[0] : entDate} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[1] : entMonth} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[2] : entYear}`,
                 'area': area,
                 'tableNumber': tableNumber,
                 'contactNumber': formdata.contactNumber ? formdata.contactNumber : contactNumber,
-                'referrer': formdata.referrer ? formdata.referrer : referer ,
+                'referrer': formdata.referrer ? formdata.referrer : referer,
                 'note': formdata.note ? formdata.note : specialNote,
                 // 'deskCharges': deskCharges,
-                'status': 'Confirmed',
+                'status': status,
                 'mode': 'WalkIn',
                 'time': `${formdata.time ? (formdata.time).split(" ")[0] : time} ${formdata.time ? (formdata.time).split(" ")[1] : meridian}`
             }
@@ -288,7 +288,7 @@ const WalkInForm = ({ id }) => {
             setEntDate(today.getDate());
             setEntMonth(today.getMonth() + 1);
             setEntYear(today.getFullYear());
-            console.log(`${formdata.eventDate ? (formdata.eventDate)?.split(" ")[0] : entDate} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[1]: entMonth} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[2] : entYear}`);
+            console.log(`${formdata.eventDate ? (formdata.eventDate)?.split(" ")[0] : entDate} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[1] : entMonth} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[2] : entYear}`);
         } else {
             let tommorow = new Date();
             let day = tommorow.getDate();
@@ -297,7 +297,7 @@ const WalkInForm = ({ id }) => {
             setEntDate(day + 1);
             setEntMonth(month + 1);
             setEntYear(year);
-            console.log(`${formdata.eventDate ? (formdata.eventDate)?.split(" ")[0] : entDate} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[1]: entMonth} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[2] : entYear}`);
+            console.log(`${formdata.eventDate ? (formdata.eventDate)?.split(" ")[0] : entDate} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[1] : entMonth} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[2] : entYear}`);
         }
     }
 
@@ -384,7 +384,35 @@ const WalkInForm = ({ id }) => {
     )
 }
 
-const ReservationForm = () => {
+const ReservationForm = ({id}) => {
+    const [formdata, setFormData] = useState({});
+    const getDataById = async (idd) => {
+        //get the document by id
+
+        let promise = db.listDocuments(
+            "65b0da7f5cc58e0cff7e",
+            "65b0f5e876d1ef0f96b0",
+            [
+                Query.equal('$id', idd)
+            ]
+        );
+        const data = await promise;
+        // console.log(data);
+        // console.log(data.documents[0]);
+        let doc = data.documents[0];
+        doc.flag = ["online", "view"]
+        // console.log(doc,"dox");
+        setFormData(doc);
+    }
+
+    useEffect(
+        () => {
+            if (id) {
+                getDataById(id);
+            }
+        }, [id]
+    );
+
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     // const [dobDate, setDobDate] = useState("");
@@ -404,27 +432,30 @@ const ReservationForm = () => {
     const [meridian, setMeridian] = useState("")
 
     const addBooking = async () => {
+        if (id) {
+            const ack = await db.deleteDocument('65b0da7f5cc58e0cff7e', '65b0f5e876d1ef0f96b0', id);
+            console.log(ack);
+        }
         // console.log(payload);
-
         const promise = db.createDocument(
             '65b0da7f5cc58e0cff7e',
             '65b0f5e876d1ef0f96b0',
             ID.unique(),
             {
-                'firstname': firstName,
-                'lastname': lastName,
-                'noofguests': pax,
+                'firstname': formdata.firstname ? formdata.firstname : firstName,
+                'lastname': formdata.lastname ? formdata.lastname : lastName,
+                'noofguests': formdata.noofguests ? formdata.noofguests : pax,
                 // 'dateofbirth': `${dobDate} ${dobMonth} ${dobYear}`,
-                'eventDate': `${entDate} ${entMonth} ${entYear}`,
+                'eventDate': `${formdata.eventDate ? (formdata.eventDate)?.split(" ")[0] : entDate} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[1] : entMonth} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[2] : entYear}`,
                 'area': area,
                 'tableNumber': tableNumber,
-                'contactNumber': contactNumber,
-                'referrer': referer,
-                'note': specialNote,
-                'deskCharges': deskCharges,
+                'contactNumber': formdata.contactNumber ? formdata.contactNumber : contactNumber,
+                'referrer': formdata.referrer ? formdata.referrer : referer,
+                'note': formdata.note ? formdata.note : specialNote,
+                // 'deskCharges': deskCharges,
                 'status': 'Confirmed',
                 'mode': 'Online',
-                'time': `${time} ${meridian}`
+                'time': `${formdata.time ? (formdata.time).split(" ")[0] : time} ${formdata.time ? (formdata.time).split(" ")[1] : meridian}`
             }
         );
 
@@ -446,7 +477,7 @@ const ReservationForm = () => {
             setEntDate(today.getDate());
             setEntMonth(today.getMonth() + 1);
             setEntYear(today.getFullYear());
-            console.log(`${entDate} ${entMonth} ${entYear}`);
+            console.log(`${formdata.eventDate ? (formdata.eventDate)?.split(" ")[0] : entDate} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[1] : entMonth} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[2] : entYear}`);
         } else {
             let tommorow = new Date();
             let day = tommorow.getDate();
@@ -455,12 +486,12 @@ const ReservationForm = () => {
             setEntDate(day + 1);
             setEntMonth(month + 1);
             setEntYear(year);
-            console.log(`${entDate} ${entMonth} ${entYear}`);
+            console.log(`${formdata.eventDate ? (formdata.eventDate)?.split(" ")[0] : entDate} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[1] : entMonth} ${formdata.eventDate ? (formdata.eventDate)?.split(" ")[2] : entYear}`);
         }
     }
 
     const handleTime = (time) => {
-        setTime(time);
+        setTime(time)
     }
 
     const handleMeridian = (m) => {
@@ -468,20 +499,22 @@ const ReservationForm = () => {
     }
 
     return (
+
         <div className="bg-white rounded-lg w-[500px] p-5 flex flex-col gap-2 overflow-y-auto">
+            {/* <p>{formdata.firstname}</p> */}
             <p>Name</p>
             <div className="flex gap-2">
-                <input value={firstName} onChange={(e) => setFirstName(e.target.value)} type="text" placeholder="First Name" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
-                <input value={lastName} onChange={(e) => setLastName(e.target.value)} type="text" placeholder="Last Name" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
+                <input value={formdata.firstname ? formdata.firstname : firstName} onChange={(e) => setFirstName(e.target.value)} type="text" placeholder="First Name" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
+                <input value={formdata.lastname ? formdata.lastname : lastName} onChange={(e) => setLastName(e.target.value)} type="text" placeholder="Last Name" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
             </div>
             {/* <p>Date Of Birth</p>
             <div className="flex gap-2">
-                <input value={dobDate} onChange={(e) => setDobDate(e.target.value)} type="text" placeholder="Date" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
+                <input value={formdata ? formdata.dateofbirth : dobDate} onChange={(e) => setDobDate(e.target.value)} type="text" placeholder="Date" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
                 <input value={dobMonth} onChange={(e) => setDobMonth(e.target.value)} type="text" placeholder="Month" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
                 <input value={dobYear} onChange={(e) => setDobYear(e.target.value)} type="text" placeholder="Year" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
             </div> */}
             <p>Contact Number</p>
-            <input type="text" value={contactNumber} onChange={(e) => setContactNumber(e.target.value)} placeholder="Contact Number" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
+            <input type="text" value={formdata ? formdata.contactNumber : contactNumber} onChange={(e) => setContactNumber(e.target.value)} placeholder="Contact Number" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
             <p>Reservation Details</p>
             <div className="flex gap-2">
                 <div className="container flex flex-col gap-2">
@@ -489,9 +522,9 @@ const ReservationForm = () => {
                     <div className="flex gap-2">
                         <button onClick={() => handleDate('today')} className='h-16 flex-1 bg-emerald-100 hover:bg-emerald-300 text-sm rounded px-2 font-bold'>Today</button>
                         <button onClick={() => handleDate('tommorow')} className='h-16 flex-1 bg-emerald-100 hover:bg-emerald-300 text-sm rounded px-2 font-bold'>Tommorow</button>
-                        <input value={entDate} onChange={(e) => setEntDate(e.target.value)} type="text" placeholder="Date" className="w-16 bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
-                        <input value={entMonth} onChange={(e) => setEntMonth(e.target.value)} type="text" placeholder="Month" className="w-16 bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
-                        <input value={entYear} onChange={(e) => setEntYear(e.target.value)} type="text" placeholder="Year" className="w-16 bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
+                        <input value={formdata.eventDate ? (formdata.eventDate)?.split(" ")[0] : entDate} onChange={(e) => setEntDate(e.target.value)} type="text" placeholder="Date" className="w-16 bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
+                        <input value={formdata.eventDate ? (formdata.eventDate)?.split(" ")[1] : entMonth} onChange={(e) => setEntMonth(e.target.value)} type="text" placeholder="Month" className="w-16 bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
+                        <input value={formdata.eventDate ? (formdata.eventDate)?.split(" ")[2] : entYear} onChange={(e) => setEntYear(e.target.value)} type="text" placeholder="Year" className="w-16 bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
                     </div>
                     <p>Time</p>
                     <div className="flex gap-2">
@@ -501,7 +534,7 @@ const ReservationForm = () => {
                         <button onClick={() => handleTime("8:30")} className='h-16 flex-1 bg-emerald-100 hover:bg-emerald-300 text-sm rounded px-2 font-bold'>8:30</button>
                         <button onClick={() => handleTime('9')} className='h-16 flex-1 bg-emerald-100 hover:bg-emerald-300 text-sm rounded px-2 font-bold'>9</button>
                         <button onClick={() => handleTime('9:30')} className='h-16 flex-1 bg-emerald-100 hover:bg-emerald-300 text-sm rounded px-2 font-bold'>9:30</button>
-                        <input value={time} onChange={(e) => setTime(e.target.value)} type="text" placeholder='Time' className='w-16 h-16 bg-gray-200 px-3 outline-none rounded placeholder:text-sm placeholder:text-black' />
+                        <input value={formdata.time ? formdata.time : `${time} ${meridian}`} onChange={(e) => setTime(e.target.value)} type="text" placeholder='Time' className='w-16 h-16 bg-gray-200 px-3 outline-none rounded placeholder:text-sm placeholder:text-black' />
                         <div className='flex flex-col gap-1'>
                             <button onClick={() => handleMeridian('AM')} className='h-16 flex-1 bg-emerald-100 hover:bg-emerald-300 text-sm rounded px-2 font-bold'>AM</button>
                             <button onClick={() => handleMeridian('PM')} className='h-16 flex-1 bg-emerald-100 hover:bg-emerald-300 text-sm rounded px-2 font-bold'>PM</button>
@@ -510,7 +543,7 @@ const ReservationForm = () => {
                     <div className="container flex gap-2">
                         <div className='flex flex-col gap-2'>
                             <p>PAX</p>
-                            <input value={pax} onChange={(e) => setPax(e.target.value)} type="number" placeholder="People" className="w-16 bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
+                            <input value={formdata.noofguests ? formdata.noofguests : pax} onChange={(e) => setPax(e.target.value)} type="number" placeholder="People" className="w-16 bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
                         </div>
                         <div className="container flex flex-col gap-2">
                             <p>Area</p>
@@ -522,18 +555,18 @@ const ReservationForm = () => {
                         </div>
                         {/* <div className="container flex flex-col gap-2">
                             <p>Desk Charges</p>
-                            <input value={deskCharges} onChange={(e) => setDeskCharges(e.target.value)} type="text" placeholder="Table" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
+                            <input value={formdata ? formdata.deskCharges : deskCharges} onChange={(e) => setDeskCharges(e.target.value)} type="text" placeholder="Desk Charges" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
                         </div> */}
                     </div>
                 </div>
             </div>
             <div className='flex flex-col gap-2'>
                 <p>Reference</p>
-                <input value={referer} onChange={(e) => setReferer(e.target.value)} type="text" placeholder="Reference" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
+                <input value={formdata.referrer ? formdata?.referrer : referer} onChange={(e) => setReferer(e.target.value)} type="text" placeholder="Reference" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
             </div>
             <div className='flex flex-col gap-2'>
                 <p>Note</p>
-                <input value={specialNote} onChange={(e) => setSpecialNote(e.target.value)} type="text" placeholder="Special Note" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
+                <input value={formdata.note ? formdata?.note : specialNote} onChange={(e) => setSpecialNote(e.target.value)} type="text" placeholder="Special Note" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
             </div>
             <button onClick={addBooking} className=" mt-2 hover:bg-emerald-800 text-sm font-bold bg-emerald-700 text-white px-12 py-3 rounded-md">ADD BOOKING</button>
         </div>
