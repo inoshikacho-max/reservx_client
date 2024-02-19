@@ -28,6 +28,7 @@ export default async function Home() {
     //   console.log(error);
     // });
     const data = await promise;
+    console.log(data);
     return data;
   }
   const data = await getData();
