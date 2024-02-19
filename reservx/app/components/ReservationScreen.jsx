@@ -79,17 +79,17 @@ const ReservationScreen = ({ list }) => {
 
     // const [selectedOption, setSelectedOption] = useState('');
 
-    const [selectedOptions, setSelectedOptions] = useState({});
+    // const [selectedOptions, setSelectedOptions] = useState({});
 
     const [idd, setIdd] = useState("");
 
     // Handler function to update selected option for a specific item
-    const handleSelectChange2 = (itemId, value) => {
-        setSelectedOptions((prevSelectedOptions) => ({
-            ...prevSelectedOptions,
-            [itemId]: value,
-        }));
-    };
+    // const handleSelectChange2 = (itemId, value) => {
+    //     setSelectedOptions((prevSelectedOptions) => ({
+    //         ...prevSelectedOptions,
+    //         [itemId]: value,
+    //     }));
+    // };
 
     // Handler function to update selected option
     // const handleSelectChange = (event) => {
@@ -143,7 +143,7 @@ const ReservationScreen = ({ list }) => {
                             </thead>
                             <tbody>
                                 {
-                                    list.map((item) =>
+                                    list?.map((item) =>
                                         <tr key={item.$id}>
                                             <td className="text-xs">{item.firstname} {item.lastname}</td>
                                             {/* <td className="text-xs">{item.dateofbirth}</td> */}

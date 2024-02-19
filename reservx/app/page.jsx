@@ -32,13 +32,16 @@ async function getData() {
   return data;
 }
 
-export default async function Home() {
+export default function Home() {
   const [list,setList] = useState([])
   
-  useEffect(async () => {
-    const data = await getData();
-    setList(data.documents)
+  useEffect(() => {
+    const data = getData();
+    data.then ((r)=> setList(r.documents))
+      .catch((err)=>{console.log("Error: ", err)})
+    console.log(list);
   })
+    // setList(data.documents)
   // const list = data.documents;
   // console.log(list);
 
