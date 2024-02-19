@@ -1,6 +1,6 @@
 
 // import { ID } from "appwrite";
-import { client, db } from "./appwrite";
+import { db } from "./appwrite";
 import ReservationScreen from "./components/ReservationScreen";
 // import Grid from "./components/Grid";
 // import { useState } from "react";
@@ -8,7 +8,7 @@ import ReservationScreen from "./components/ReservationScreen";
 
 export default async function Home() {
   async function getData() {
-    'use server'
+    // 'use server'
     // const res = await fetch()
     // // The return value is *not* serialized
     // // You can return Date, Map, Set, etc.
