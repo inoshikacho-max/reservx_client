@@ -1,38 +1,45 @@
-
+"use client"
 // import { ID } from "appwrite";
+import { useEffect, useState } from "react";
 import { db } from "./appwrite";
 import ReservationScreen from "./components/ReservationScreen";
 // import Grid from "./components/Grid";
 // import { useState } from "react";
 
 
+async function getData() {
+  // 'use server'
+  // const res = await fetch()
+  // // The return value is *not* serialized
+  // // You can return Date, Map, Set, etc.
+
+  // if (!res.ok) {
+  //   // This will activate the closest `error.js` Error Boundary
+  //   throw new Error('Failed to fetch data')
+  // }
+  let promise = db.listDocuments(
+    "65b0da7f5cc58e0cff7e",
+    "65b0f5e876d1ef0f96b0",
+  );
+
+  // promise.then(function (response) {
+  //   // console.log(response);
+  // }, function (error) {
+  //   console.log(error);
+  // });
+  const data = await promise;
+  console.log(data);
+  return data;
+}
+
 export default async function Home() {
-  async function getData() {
-    // 'use server'
-    // const res = await fetch()
-    // // The return value is *not* serialized
-    // // You can return Date, Map, Set, etc.
-
-    // if (!res.ok) {
-    //   // This will activate the closest `error.js` Error Boundary
-    //   throw new Error('Failed to fetch data')
-    // }
-    let promise = db.listDocuments(
-      "65b0da7f5cc58e0cff7e",
-      "65b0f5e876d1ef0f96b0",
-    );
-
-    // promise.then(function (response) {
-    //   // console.log(response);
-    // }, function (error) {
-    //   console.log(error);
-    // });
-    const data = await promise;
-    console.log(data);
-    return data;
-  }
-  const data = await getData();
-  const list = data.documents;
+  const [list,setList] = useState([])
+  
+  useEffect(async () => {
+    const data = await getData();
+    setList(data.documents)
+  })
+  // const list = data.documents;
   // console.log(list);
 
   // const [firstName, setFirstName] = useState("");
