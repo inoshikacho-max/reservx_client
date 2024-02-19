@@ -5,30 +5,31 @@ import ReservationScreen from "./components/ReservationScreen";
 // import Grid from "./components/Grid";
 // import { useState } from "react";
 
-async function getData() {
-  // const res = await fetch()
-  // // The return value is *not* serialized
-  // // You can return Date, Map, Set, etc.
-
-  // if (!res.ok) {
-  //   // This will activate the closest `error.js` Error Boundary
-  //   throw new Error('Failed to fetch data')
-  // }
-  let promise = db.listDocuments(
-    "65b0da7f5cc58e0cff7e",
-    "65b0f5e876d1ef0f96b0",
-  );
-
-  // promise.then(function (response) {
-  //   // console.log(response);
-  // }, function (error) {
-  //   console.log(error);
-  // });
-  const data = await promise;
-  return data;
-}
 
 export default async function Home() {
+  async function getData() {
+    'use server'
+    // const res = await fetch()
+    // // The return value is *not* serialized
+    // // You can return Date, Map, Set, etc.
+
+    // if (!res.ok) {
+    //   // This will activate the closest `error.js` Error Boundary
+    //   throw new Error('Failed to fetch data')
+    // }
+    let promise = db.listDocuments(
+      "65b0da7f5cc58e0cff7e",
+      "65b0f5e876d1ef0f96b0",
+    );
+
+    // promise.then(function (response) {
+    //   // console.log(response);
+    // }, function (error) {
+    //   console.log(error);
+    // });
+    const data = await promise;
+    return data;
+  }
   const data = await getData();
   const list = data.documents;
   // console.log(list);
@@ -44,7 +45,7 @@ export default async function Home() {
   // const [pax,setPax] = useState(0);
   // const [area,setArea] = useState("");
   // const [tableNumber,setTableNunber] = useState(0);
- 
+
   // const addBooking = async () => {
   //   try {
   //     const promise = db.createDocument(
@@ -67,7 +68,7 @@ export default async function Home() {
   // };
 
   return (
-    <ReservationScreen list={list}/>
+    <ReservationScreen list={list} />
     // <main className="flex min-h-screen flex-col items-center p-12 px-36">
     //   <header className="bg-white container rounded-lg h-32 px-8 flex items-center justify-between">
     //     <p className="text-3xl font-bold">Reservations</p>
