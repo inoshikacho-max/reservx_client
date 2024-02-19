@@ -28,7 +28,7 @@ async function getData() {
   //   console.log(error);
   // });
   const data = await promise;
-  // console.log(data);
+  console.log(data);
   return data;
 }
 

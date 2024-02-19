@@ -91,11 +91,6 @@ const ReservationScreen = ({ list }) => {
     //     }));
     // };
 
-    // Handler function to update selected option
-    // const handleSelectChange = (event) => {
-    //     setSelectedOption(event.target.value);
-    // };
-
     // let doc = {};
     // const handleViewClick = async (id) => {
     //     setTab("reservation")
@@ -137,7 +132,7 @@ const ReservationScreen = ({ list }) => {
                                     <th className=" text-xs text-start">Guests</th>
                                     <th className='text-xs text-start'>Time</th>
                                     <th className=" text-xs text-start">Event Date</th>
-                                    {/* <th className=" text-xs text-start">Status</th> */}
+                                    <th className=" text-xs text-start">Status</th>
                                     <th className=" text-xs text-start">Mode</th>
                                 </tr>
                             </thead>
@@ -151,16 +146,7 @@ const ReservationScreen = ({ list }) => {
                                             <td className="text-xs">{item.noofguests}</td>
                                             <td className='text-xs'>{item.time}</td>
                                             <td className='text-xs'>{item.eventDate}</td>
-                                            {/* <td className='text-xs'>
-                                                <select id="dropdown" value={selectedOptions[item.$id] || ''} onChange={(e) => handleSelectChange2(item.$id, e.target.value)}>
-                                                    <option value="">Select</option>
-                                                    <option value="Confirmed">Confirmed</option>
-                                                    <option value="Cancled">Cancled</option>
-                                                    <option value="Waiting">Waiting</option>
-                                                    <option value="CheckedIn">Checked In</option>
-                                                    <option value="CheckedOut">Checked Out</option>
-                                                </select>
-                                            </td> */}
+                                            <td className='text-xs'>{item.status}</td>
                                             <td className='text-xs'>{item.mode}</td>
                                             <td>
                                                 <button onClick={() => handleViewClick(item.$id)} className='text-xs font-semibold bg-gray-200 px-2 py-1 rounded'>VIEW</button>
@@ -240,7 +226,7 @@ const WalkInForm = ({ id }) => {
     // const [deskCharges, setDeskCharges] = useState(0);
     const [time, setTime] = useState("");
     const [meridian, setMeridian] = useState("")
-    const [status,setStatus] = useState("Confirmed")
+    const [status, setStatus] = useState("Confirmed")
 
     const addBooking = async () => {
         if (id) {
@@ -309,6 +295,11 @@ const WalkInForm = ({ id }) => {
         setMeridian(m)
     }
 
+    // Handler function to update selected option
+    const handleSelectChange = (value) => {
+        setStatus(value);
+    };
+
     return (
 
         <div className="bg-white rounded-lg w-[500px] p-5 flex flex-col gap-2 overflow-y-auto">
@@ -327,6 +318,17 @@ const WalkInForm = ({ id }) => {
             <p>Contact Number</p>
             <input type="text" value={formdata ? formdata.contactNumber : contactNumber} onChange={(e) => setContactNumber(e.target.value)} placeholder="Contact Number" className="w-full bg-gray-200 px-3 rounded outline-none h-16 placeholder:text-sm placeholder:text-black" />
             <p>Reservation Details</p>
+            <p>Status</p>
+            <div>
+                <select className=' w-full bg-gray-200 px-3 rounded outline-none h-16 ' id="dropdown" value={status} onChange={(e) => handleSelectChange(e.target.value)}>
+                    <option value="">Select</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Cancled">Cancled</option>
+                    <option value="Waiting">Waiting</option>
+                    <option value="CheckedIn">Checked In</option>
+                    <option value="CheckedOut">Checked Out</option>
+                </select>
+            </div>
             <div className="flex gap-2">
                 <div className="container flex flex-col gap-2">
                     <p>Event Date</p>
@@ -384,7 +386,7 @@ const WalkInForm = ({ id }) => {
     )
 }
 
-const ReservationForm = ({id}) => {
+const ReservationForm = ({ id }) => {
     const [formdata, setFormData] = useState({});
     const getDataById = async (idd) => {
         //get the document by id
