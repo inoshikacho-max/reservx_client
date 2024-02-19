@@ -28,7 +28,7 @@ async function getData() {
   //   console.log(error);
   // });
   const data = await promise;
-  console.log(data);
+  // console.log(data);
   return data;
 }
 
@@ -39,7 +39,7 @@ export default function Home() {
     const data = getData();
     data.then ((r)=> setList(r.documents))
       .catch((err)=>{console.log("Error: ", err)})
-    console.log(list);
+    // console.log(list);
   })
     // setList(data.documents)
   // const list = data.documents;
